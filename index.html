@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>My Stylish App</title>
+</head>
+
+<body>
+
+<h2>My App</h2>
+
+<input id="name" placeholder="Enter task">
+<button onclick="add()">Add</button>
+
+<ul id="list"></ul>
+
+<script>
+function add() {
+  let name = document.getElementById("name").value;
+
+  let li = document.createElement("li");
+  li.textContent = name;
+
+  document.getElementById("list").appendChild(li);
+}
+</script>
+
+</body>
+</html>
