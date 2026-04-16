@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>My Wallet</title>
+
+  <style>
+    body {
+      font-family: Arial;
+      background: linear-gradient(to right, #667eea, #764ba2);
+      display: flex;
+      justify-content: center;
+      margin-top: 60px;
+    }
+
+    .box {
+      background: white;
+      padding: 20px;
+      border-radius: 15px;
+      width: 320px;
+      text-align: center;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    }
+
+    .hidden { display: none; }
+
+    .card {
+      background: linear-gradient(135deg, #00c6ff, #0072ff);
+      color: white;
+      padding: 20px;
+      border-radius: 15px;
+      text-align: left;
+      margin-bottom: 15px;
+    }
+
+    input {
+      width: 90%;
+      padding: 10px;
+      margin-top: 10px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+    }
+
+    button {
+      margin-top: 10px;
+      padding: 10px;
+      width: 90%;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      color: white;
+      background: #667eea;
+    }
+
+    .logout {
+      background: red;
+    }
+
+    li {
+      margin-top: 8px;
+      text-align: left;
+      background: #f1f1f1;
+      padding: 8px;
+      border-radius: 6px;
+    }
+  </style>
+</head>
+
+<body>
+
+<!-- 🔐 LOGIN -->
+<div class="box" id="loginBox">
+  <h2>🔐 Login</h2>
+  <input id="username" placeholder="Username">
+  <input id="password" type="password" placeholder="Password">
+  <button onclick="login()">Login</button>
+</div>
+
+<!-- 💰 WALLET -->
+<div class="box hidden" id="appBox">
+  <h2>💰 My Wallet</h2>
+
+  <div class="card">
+    <h3>Balance</h3>
+    <h2>₹<span id="balance"></span></h2>
+    <p>**** **** **** 1234</p>
+  </div>
+
+  <button class="logout" onclick="logout()">🔓 Logout</button>
+
+  <input id="name" placeholder="Enter name">
+  <input id="amount" type="number" placeholder="Enter amount">
+
+  <button onclick="addMoney()">➕ Add Money</button>
+  <button onclick="sendMoney()">💸 Send Money</button>
+
+  <h3>Transactions</h3>
+  <ul id="history"></ul>
+</div>
+
+<!-- 🔊 SOUND -->
+<audio id="sound" src="https://www.soundjay.com/button/beep-07.wav"></audio>
+
+<script>
+let balance = JSON.parse(localStorage.getItem("balance")) || 1000;
+let history = JSON.parse(localStorage.getItem("history")) || [];
+
+function login() {
+  let user = document.getElementById("username").value;
+  let pass = document.getElementById("password").value;
+
+  if (user === "admin" && pass === "1234") {
+    localStorage.setItem("loggedIn", true);
+    showApp();
+  } else {
+    alert("Wrong login");
+  }
+}
+
+function logout() {
+  localStorage.removeItem("loggedIn");
+  location.reload();
+}
+
+function showApp() {
+  document.getElementById("loginBox").classList.add("hidden");
+  document.getElementById("appBox").classList.remove("hidden");
+  updateUI();
+}
+
+if (localStorage.getItem("loggedIn")) {
+  showApp();
+}
+
+function updateUI() {
+  document.getElementById("balance").textContent = balance;
+
+  let list = document.getElementById("history");
+  list.innerHTML = "";
+
+  history.forEach(item => {
+    let li = document.createElement("li");
+    li.textContent = item;
+
+    if (item.includes("Added")) {
+      li.style.color = "green";
+    } else {
+      li.style.color = "red";
+    }
+
+    list.appendChild(li);
+  });
+}
+
+function addMoney() {
+  let amt = Number(document.getElementById("amount").value);
+  if (!amt) return;
+
+  balance += amt;
+  history.unshift("Added ₹" + amt);
+  save();
+}
+
+function sendMoney() {
+  let name = document.getElementById("name").value.trim();
+  let amt = Number(document.getElementById("amount").value);
+
+  if (name === "" || !amt || amt > balance) {
+    alert("Enter valid details");
+    return;
+  }
+
+  balance -= amt;
+  history.unshift("Sent ₹" + amt + " to " + name);
+
+  // 🔊 PLAY SOUND
+  document.getElementById("sound").play();
+
+  save();
+}
+
+function save() {
+  localStorage.setItem("balance", JSON.stringify(balance));
+  localStorage.setItem("history", JSON.stringify(history));
+  updateUI();
+}
+</script>
+
+</body>
+</html><!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>My Wallet</title>
+
+  <!-- ✅ Manifest -->
+  <link rel="manifest" href="manifest.json">
+
+  <style>
+    body {
+      font-family: Arial;
+      background: linear-gradient(to right, #667eea, #764ba2);
+      display: flex;
+      justify-content: center;
+      margin-top: 60px;
+    }
+
+    .box {
+      background: white;
+      padding: 20px;
+      border-radius: 15px;
+      width: 320px;
+      text-align: center;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    }
+
+    .hidden { display: none; }
+
+    .card {
+      background: linear-gradient(135deg, #00c6ff, #0072ff);
+      color: white;
+      padding: 20px;
+      border-radius: 15px;
+      text-align: left;
+      margin-bottom: 15px;
+    }
+
+    input {
+      width: 90%;
+      padding: 10px;
+      margin-top: 10px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+    }
+
+    button {
+      margin-top: 10px;
+      padding: 10px;
+      width: 90%;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      color: white;
+      background: #667eea;
+    }
+
+    .logout { background: red; }
+
+    li {
+      margin-top: 8px;
+      text-align: left;
+      background: #f1f1f1;
+      padding: 8px;
+      border-radius: 6px;
+    }
+  </style>
+</head>
+
+<body>
+
+<!-- LOGIN -->
+<div class="box" id="loginBox">
+  <h2>🔐 Login</h2>
+  <input id="username" placeholder="Username">
+  <input id="password" type="password" placeholder="Password">
+  <button onclick="login()">Login</button>
+</div>
+
+<!-- APP -->
+<div class="box hidden" id="appBox">
+  <h2>💰 My Wallet</h2>
+
+  <div class="card">
+    <h3>Balance</h3>
+    <h2>₹<span id="balance"></span></h2>
+  </div>
+
+  <button class="logout" onclick="logout()">Logout</button>
+
+  <input id="name" placeholder="Enter name">
+  <input id="amount" type="number" placeholder="Enter amount">
+
+  <button onclick="addMoney()">Add Money</button>
+  <button onclick="sendMoney()">Send Money</button>
+
+  <h3>Transactions</h3>
+  <ul id="history"></ul>
+</div>
+
+<script>
+let balance = JSON.parse(localStorage.getItem("balance")) || 1000;
+let history = JSON.parse(localStorage.getItem("history")) || [];
+
+function login() {
+  let user = document.getElementById("username").value;
+  let pass = document.getElementById("password").value;
+
+  if (user === "admin" && pass === "1234") {
+    localStorage.setItem("loggedIn", true);
+    showApp();
+  } else {
+    alert("Wrong login");
+  }
+}
+
+function logout() {
+  localStorage.removeItem("loggedIn");
+  location.reload();
+}
+
+function showApp() {
+  document.getElementById("loginBox").classList.add("hidden");
+  document.getElementById("appBox").classList.remove("hidden");
+  updateUI();
+}
+
+if (localStorage.getItem("loggedIn")) {
+  showApp();
+}
+
+function updateUI() {
+  document.getElementById("balance").textContent = balance;
+
+  let list = document.getElementById("history");
+  list.innerHTML = "";
+
+  history.forEach(item => {
+    let li = document.createElement("li");
+    li.textContent = item;
+
+    if (item.includes("Added")) {
+      li.style.color = "green";
+    } else {
+      li.style.color = "red";
+    }
+
+    list.appendChild(li);
+  });
+}
+
+function addMoney() {
+  let amt = Number(document.getElementById("amount").value);
+  if (!amt) return;
+
+  balance += amt;
+  history.unshift("Added ₹" + amt);
+  save();
+}
+
+function sendMoney() {
+  let name = document.getElementById("name").value.trim();
+  let amt = Number(document.getElementById("amount").value);
+
+  if (name === "" || !amt || amt > balance) {
+    alert("Enter valid details");
+    return;
+  }
+
+  balance -= amt;
+  history.unshift("Sent ₹" + amt + " to " + name);
+  save();
+}
+
+function save() {
+  localStorage.setItem("balance", JSON.stringify(balance));
+  localStorage.setItem("history", JSON.stringify(history));
+  updateUI();
+}
+</script>
+
+<!-- ✅ Service Worker -->
+<script>
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.register("service-worker.js");
+}
+</script>
+
+</body>
+</html>
